@@ -1,6 +1,6 @@
 {
   "name": "angular-weather-widget",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Weather Widget based on Open Weather Map Api",
   "main": "./bundles/angular-weather-widget.umd.js",
   "module": "./index.js",
@@ -24,7 +24,6 @@
     "release:npm": "npm run build:dist && npm run copyfiles && npm publish dist",
     "release": "npm run release:git && npm run release:npm",
     "postrelease": "npm run build:clean && npm run gh-pages",
-    "commitmsg": "validate-commit-msg",
     "codecov": "cat coverage/lcov.info | codecov",
     "prettier": "prettier --single-quote --parser typescript --write",
     "precommit": "lint-staged"
@@ -37,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/krzysztofsaja/angular-weather-widget.git"
+    "url": "git+https://github.com/ProvideDigital/angular-weather-widget.git"
   },
   "keywords": [
     "angular2",
@@ -46,21 +45,21 @@
   "author": "Krzysztof Saja",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/krzysztofsaja/angular-weather-widget/issues"
+    "url": "https://github.com/ProvideDigital/angular-weather-widget/issues"
   },
-  "homepage": "https://github.com/krzysztofsaja/angular-weather-widget#readme",
+  "homepage": "https://github.com/ProvideDigital/angular-weather-widget#readme",
   "devDependencies": {
-    "@angular/animations": "^4.0.0",
-    "@angular/common": "^4.0.0",
-    "@angular/compiler": "^4.0.0",
-    "@angular/compiler-cli": "^4.0.0",
-    "@angular/core": "^4.0.0",
-    "@angular/forms": "^4.0.0",
-    "@angular/http": "^4.0.0",
-    "@angular/language-service": "^4.0.0",
-    "@angular/platform-browser": "^4.0.0",
-    "@angular/platform-browser-dynamic": "^4.0.0",
-    "@angular/router": "^4.0.0",
+    "@angular/animations": "^8.0.0",
+    "@angular/common": "^8.0.0",
+    "@angular/compiler": "^8.0.0",
+    "@angular/compiler-cli": "^8.0.0",
+    "@angular/core": "^8.0.0",
+    "@angular/forms": "^8.0.0",
+    "@angular/http": "^8.0.0",
+    "@angular/language-service": "^8.0.0",
+    "@angular/platform-browser": "^8.0.0",
+    "@angular/platform-browser-dynamic": "^8.0.0",
+    "@angular/router": "^8.0.0",
     "@compodoc/compodoc": "^1.0.0-beta.3",
     "@types/chai": "^4.0.0",
     "@types/html-webpack-plugin": "^2.11.2",
@@ -115,9 +114,8 @@
     "chart.js": "^2.6.0"
   },
   "peerDependencies": {
-    "@angular/core": ">=4.0.0 <5.0.0",
-    "@angular/http": ">=4.0.0 <5.0.0",
-    "@angular/router": ">=4.0.0 <5.0.0",
+    "@angular/core": ">=4.0.0 <9.0.0",
+    "@angular/router": ">=4.0.0 <9.0.0",
     "chart.js": "^2.6.0"
   },
   "config": {

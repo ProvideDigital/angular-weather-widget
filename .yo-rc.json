@@ -1,6 +1,6 @@
 {
   "generator-angular-library": {
-    "githubUsername": "krzysztofsaja",
+    "githubUsername": "ProvideDigital",
     "githubRepoName": "angular-weather-widget",
     "npmModuleName": "angular-weather-widget",
     "moduleGlobal": "angularWeatherWidget",
@@ -8,7 +8,7 @@
     "selectorPrefix": "weather",
     "projectTitle": "Angular Weather Widget",
     "projectDescription": "Weather Widget based on Open Weather Map Api",
-    "authorName": "Krzysztof Saja",
+    "authorName": "Paul Baugher",
     "packageManager": "yarn"
   }
 }
