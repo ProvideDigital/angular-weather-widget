@@ -9,8 +9,11 @@ import {
   FORECAST_MOCK
 } from '../src/mocks/open-weather-map.mock';
 import { Observable } from 'rxjs/Observable';
-import { HttpModule, XHRBackend } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import {
+  HttpClientModule as HttpModule,
+  XHRBackend
+} from '@angular/common/http';
+import { MockBackend } from '@angular/common/http/testing';
 
 declare var OPEN_WEATHER_MAP_API_KEY: string;
 let instance: WeatherContainer, fixture: ComponentFixture<WeatherContainer>;

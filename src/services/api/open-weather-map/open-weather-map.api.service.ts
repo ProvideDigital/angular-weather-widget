@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient as Http } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { TemperatureScale } from '../../../components/weather-current-temperature/current-temperature.component';
 import { PoolingService } from '../../poling.service';

@@ -1,5 +1,10 @@
 import { Inject, Injectable } from '@angular/core';
-import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
+import {
+  Headers,
+  HttpClient as Http,
+  RequestOptions,
+  URLSearchParams
+} from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { PoolingService } from '../poling.service';
 import 'rxjs/add/operator/map';
