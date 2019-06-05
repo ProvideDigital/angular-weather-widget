@@ -55,7 +55,6 @@
     "@angular/compiler-cli": "^8.0.0",
     "@angular/core": "^8.0.0",
     "@angular/forms": "^8.0.0",
-    "@angular/http": "^8.0.0",
     "@angular/language-service": "^8.0.0",
     "@angular/platform-browser": "^8.0.0",
     "@angular/platform-browser-dynamic": "^8.0.0",
