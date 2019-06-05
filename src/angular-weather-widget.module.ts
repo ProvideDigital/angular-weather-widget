@@ -1,5 +1,5 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { Http, HttpModule } from '@angular/http';
+import { HttpClient as Http, HttpClientModule as HttpModule} from '@angular/http';
 import {
   WeatherApiConfig,
   WeatherApiName,
