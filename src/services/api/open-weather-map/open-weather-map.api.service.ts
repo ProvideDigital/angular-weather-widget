@@ -15,7 +15,7 @@ import { WeatherQueryParams } from '../../../weather.interfaces';
 @Injectable()
 export class OpenWeatherMapApiService extends WeatherApiService {
   iconCodes: IconCodeType;
-  iconCodes$: Observable<any>;
+  // iconCodes$: Observable<any>;
   constructor(
     protected http: Http,
     protected poolingService: PoolingService,
@@ -144,7 +144,7 @@ export interface OpenWeatherMapLocationRequest {
   q?: string;
   lat?: number;
   lon?: number;
-  zip?: number;
+  zip?: number | string;
   units?: 'imperial' | 'metric';
   lang?: string;
 }
