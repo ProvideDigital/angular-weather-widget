@@ -95,6 +95,7 @@
     "prettier": "^1.5.3",
     "prettier-loader": "^1.0.1",
     "rxjs": "^6.5.2",
+    "rxjs-compat": "^6.5.2",
     "sinon": "^2.0.0",
     "sinon-chai": "^2.8.0",
     "standard-version": "^4.0.0",

@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@angular/core';
 import {
-  HttpHeaders as Headers,
-  HttpClient as Http,
-  RequestOptions,
-  URLSearchParams
+  HttpHeaders,
+  HttpClient,
+  HttpHandler,
+  HttpEvent,
+  HttpParams
 } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { PoolingService } from '../poling.service';
@@ -11,13 +12,14 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/first';
+import { map, tap, filter, catchError, timeout } from 'rxjs/operators';
 import { WeatherQueryParams } from '../../weather.interfaces';
 
 @Injectable()
 export abstract class WeatherApiService {
   poollingInterval = 60000 * 60;
   constructor(
-    protected http: Http,
+    protected http: HttpClient,
     protected poolingService: PoolingService,
     @Inject('WEATHER_CONFIG') public apiConfig: WeatherApiConfig
   ) {}
@@ -40,10 +42,13 @@ export abstract class WeatherApiService {
   ): Observable<any> {
     const params = this.mapQueryParams(queryParams);
     const requestOptions = this.getRequestOptions(params);
-    const apiCall: Observable<any> = this.http
+    const apiCall = this.http
       .get(`${this.apiConfig.baseUrl}/${endpoint}`, requestOptions)
-      .map(resp => resp.json())
-      .filter(el => !!el);
+      .pipe(
+        map(resp => resp),
+        filter(el => !!el)
+      );
+
     return this.wrapWithPoll(apiCall);
   }
 
@@ -79,14 +84,14 @@ export abstract class WeatherApiService {
   }
 
   private getRequestOptions(queryParams: Object) {
-    return new RequestOptions({
-      headers: new Headers(),
+    return {
+      headers: new HttpHeaders(),
       params: this.getQueryParams(queryParams)
-    });
+    };
   }
 
-  private getQueryParams(obj: { [key: string]: any }): URLSearchParams {
-    const queryParams = new URLSearchParams();
+  private getQueryParams(obj: { [key: string]: any }): HttpParams {
+    const queryParams = new HttpParams();
     queryParams.set(this.setTokenKey(), this.apiConfig.key);
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
