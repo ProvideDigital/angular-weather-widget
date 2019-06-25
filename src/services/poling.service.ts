@@ -22,18 +22,20 @@ export class PoolingService {
       let sub: Subscription;
       this.zone.runOutsideAngular(() => {
         const zone = this.zone;
-        sub = Observable.interval(frequency).mergeMap(operation).subscribe({
-          next(result) {
-            zone.run(() => {
-              observer.next(result);
-            });
-          },
-          error(err) {
-            zone.run(() => {
-              observer.error(err);
-            });
-          }
-        });
+        sub = Observable.interval(frequency)
+          .mergeMap(operation)
+          .subscribe({
+            next(result) {
+              zone.run(() => {
+                observer.next(result);
+              });
+            },
+            error(err) {
+              zone.run(() => {
+                observer.error(err);
+              });
+            }
+          });
       });
 
       return () => {
@@ -43,6 +45,9 @@ export class PoolingService {
       };
     });
 
-    return source.multicast(subject).refCount().merge(operation());
+    return source
+      .multicast(subject)
+      .refCount()
+      .merge(operation());
   }
 }
