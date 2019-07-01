@@ -29,8 +29,8 @@ export default {
       exclude: /node_modules/,
       enforce: 'pre',
       options: {
-        emitErrors: true,
-        failOnHint: true
+        emitErrors: false,
+        failOnHint: false
       }
     }, {
       test: /\.ts$/,
