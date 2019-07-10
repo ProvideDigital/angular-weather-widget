@@ -4891,6 +4891,7 @@ var WeatherApiService = (function () {
     WeatherApiService.prototype.callApi = function (queryParams, endpoint) {
         var params = this.mapQueryParams(queryParams);
         var requestOptions = this.getRequestOptions(params);
+        console.log('callApi:', params, requestOptions);
         var apiCall = this.http
             .get(this.apiConfig.baseUrl + "/" + endpoint, requestOptions)
             .pipe(operators_1.map(function (resp) { return resp; }), operators_1.filter(function (el) { return !!el; }));

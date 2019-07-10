@@ -42,6 +42,8 @@ export abstract class WeatherApiService {
   ): Observable<any> {
     const params = this.mapQueryParams(queryParams);
     const requestOptions = this.getRequestOptions(params);
+
+    console.log('callApi:', params, requestOptions);
     const apiCall = this.http
       .get(`${this.apiConfig.baseUrl}/${endpoint}`, requestOptions)
       .pipe(
