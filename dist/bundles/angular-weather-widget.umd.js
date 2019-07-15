@@ -4702,16 +4702,15 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var WeatherSettings = (function () {
-    function WeatherSettings() {
+class WeatherSettings {
+    constructor() {
         this.location = { cityName: 'Szczecin' };
         this.scale = TemperatureScale.CELCIUS;
         this.backgroundColor = 'white';
         this.color = 'black';
         this.layout = WeatherLayout.NARROW;
     }
-    return WeatherSettings;
-}());
+}
 exports.WeatherSettings = WeatherSettings;
 var ForecastMode;
 (function (ForecastMode) {
@@ -4747,15 +4746,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var WeatherHelpersService = (function () {
-    function WeatherHelpersService() {
-    }
-    WeatherHelpersService.prototype.groupForecastsByDay = function (list) {
-        var map = {};
-        var result = [];
-        list.forEach(function (el) {
-            var day = el.data.getUTCDate();
+const core_1 = __webpack_require__(1);
+let WeatherHelpersService = class WeatherHelpersService {
+    constructor() { }
+    groupForecastsByDay(list) {
+        const map = {};
+        let result = [];
+        list.forEach(el => {
+            const day = el.data.getUTCDate();
             if (!map[day]) {
                 map[day] = [el];
             }
@@ -4763,26 +4761,26 @@ var WeatherHelpersService = (function () {
                 map[day].push(el);
             }
         });
-        result = Object.keys(map).map(function (key) { return map[key]; });
+        result = Object.keys(map).map(key => map[key]);
         return result;
-    };
+    }
     // Fixme: This function generates wrong icon for average day weather.
     // Weather icon is taken from first day measurement
-    WeatherHelpersService.prototype.reduceToAveragePerDay = function (list) {
-        return list.reduce(function (prev, curr) {
+    reduceToAveragePerDay(list) {
+        return list.reduce((prev, curr) => {
             if (curr && !curr.data) {
                 prev.push(curr);
                 return prev;
             }
-            var lastElement = function () {
+            const lastElement = function () {
                 return prev[prev.length - 1];
             };
-            var prevDay = lastElement()
+            const prevDay = lastElement()
                 ? prev[prev.length - 1].data.getDay()
                 : null;
-            var currDay = curr.data.getDay();
+            const currDay = curr.data.getDay();
             if (currDay === prevDay) {
-                var result = lastElement();
+                const result = lastElement();
                 result.temp = (result.temp + curr.temp) / 2;
                 if (result.wind && curr.wind) {
                     result.wind = {
@@ -4804,15 +4802,14 @@ var WeatherHelpersService = (function () {
                 return prev;
             }
         }, []);
-    };
-    WeatherHelpersService.prototype.mapForecastToCharts = function (forecast, borderColor) {
-        if (borderColor === void 0) { borderColor = '#aaa'; }
-        return forecast.reduce(function (prev, curr) {
+    }
+    mapForecastToCharts(forecast, borderColor = '#aaa') {
+        return forecast.reduce((prev, curr) => {
             if (prev.labels) {
                 prev.labels.push(curr.data.toISOString());
             }
             if (prev.datasets && prev.datasets[0] && prev.datasets[0].data) {
-                var data = prev.datasets[0].data;
+                const data = prev.datasets[0].data;
                 data.push(curr.temp);
             }
             return prev;
@@ -4827,24 +4824,23 @@ var WeatherHelpersService = (function () {
                 }
             ]
         });
-    };
-    WeatherHelpersService.prototype.hexToRgbA = function (hex, opacity) {
-        var c;
+    }
+    hexToRgbA(hex, opacity) {
+        let c;
         if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
             c = hex.substring(1).split('');
             if (c.length === 3) {
                 c = [c[0], c[0], c[1], c[1], c[2], c[2]];
             }
             c = '0x' + c.join('');
-            return "rgba(" + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + "," + opacity + ")";
+            return `rgba(${[(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',')},${opacity})`;
         }
-    };
-    WeatherHelpersService = __decorate([
-        core_1.Injectable(),
-        __metadata("design:paramtypes", [])
-    ], WeatherHelpersService);
-    return WeatherHelpersService;
-}());
+    }
+};
+WeatherHelpersService = __decorate([
+    core_1.Injectable(),
+    __metadata("design:paramtypes", [])
+], WeatherHelpersService);
 exports.WeatherHelpersService = WeatherHelpersService;
 
 
@@ -4867,95 +4863,93 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var http_1 = __webpack_require__(5);
-var poling_service_1 = __webpack_require__(6);
+const core_1 = __webpack_require__(1);
+const http_1 = __webpack_require__(5);
+const poling_service_1 = __webpack_require__(6);
 __webpack_require__(143);
 __webpack_require__(144);
 __webpack_require__(145);
 __webpack_require__(146);
-var operators_1 = __webpack_require__(147);
-var WeatherApiService = (function () {
-    function WeatherApiService(http, poolingService, apiConfig) {
+const operators_1 = __webpack_require__(147);
+let WeatherApiService = class WeatherApiService {
+    constructor(http, poolingService, apiConfig) {
         this.http = http;
         this.poolingService = poolingService;
         this.apiConfig = apiConfig;
         this.poollingInterval = 60000 * 60;
     }
-    WeatherApiService.prototype.currentWeather = function (queryParams) {
+    currentWeather(queryParams) {
         return this.callApi(queryParams, '/weather').map(this.mapCurrentWeatherResponse.bind(this));
-    };
-    WeatherApiService.prototype.forecast = function (queryParams) {
+    }
+    forecast(queryParams) {
         return this.callApi(queryParams, '/forecast').map(this.mapForecastResponse.bind(this));
-    };
-    WeatherApiService.prototype.callApi = function (queryParams, endpoint) {
-        var params = this.mapQueryParams(queryParams);
-        var requestOptions = this.getRequestOptions(params);
+    }
+    callApi(queryParams, endpoint) {
+        const params = this.mapQueryParams(queryParams);
+        const requestOptions = this.getRequestOptions(params);
         console.log('callApi:', params, requestOptions);
-        var apiCall = this.http
-            .get(this.apiConfig.baseUrl + "/" + endpoint, requestOptions)
-            .pipe(operators_1.map(function (resp) { return resp; }), operators_1.filter(function (el) { return !!el; }));
+        const apiCall = this.http
+            .get(`${this.apiConfig.baseUrl}/${endpoint}`, requestOptions)
+            .pipe(operators_1.map(resp => resp), operators_1.filter(el => !!el));
         return this.wrapWithPoll(apiCall);
-    };
-    WeatherApiService.prototype.setTokenKey = function () {
+    }
+    setTokenKey() {
         // Implement it in child service
         return '';
-    };
-    WeatherApiService.prototype.mapQueryParams = function (params) {
+    }
+    mapQueryParams(params) {
         // Implement it in child service
         return;
-    };
-    WeatherApiService.prototype.mapCurrentWeatherResponse = function (response) {
+    }
+    mapCurrentWeatherResponse(response) {
         // Implement it in child service
         return {};
-    };
-    WeatherApiService.prototype.mapForecastResponse = function (response) {
+    }
+    mapForecastResponse(response) {
         // Implement it in child service
         return [];
-    };
-    WeatherApiService.prototype.mapResponseToIconUrl = function (response) {
+    }
+    mapResponseToIconUrl(response) {
         return '';
-    };
-    WeatherApiService.prototype.mapResponseToIconClass = function (response) {
+    }
+    mapResponseToIconClass(response) {
         return '';
-    };
-    WeatherApiService.prototype.wrapWithPoll = function (apiCall) {
-        return this.poolingService.execute(function () { return apiCall; }, this.poollingInterval);
-    };
-    WeatherApiService.prototype.getRequestOptions = function (queryParams) {
+    }
+    wrapWithPoll(apiCall) {
+        return this.poolingService.execute(() => apiCall, this.poollingInterval);
+    }
+    getRequestOptions(queryParams) {
         return {
             headers: new http_1.HttpHeaders(),
             params: this.getQueryParams(queryParams)
         };
-    };
-    WeatherApiService.prototype.getQueryParams = function (obj) {
-        var queryParams = new http_1.HttpParams();
+    }
+    getQueryParams(obj) {
+        const queryParams = new http_1.HttpParams();
         queryParams.set(this.setTokenKey(), this.apiConfig.key);
-        for (var key in obj) {
+        for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
                 queryParams.set(key.toString(), obj[key]);
             }
         }
         return queryParams;
-    };
-    WeatherApiService = __decorate([
-        core_1.Injectable(),
-        __param(2, core_1.Inject('WEATHER_CONFIG')),
-        __metadata("design:paramtypes", [http_1.HttpClient,
-            poling_service_1.PoolingService,
-            WeatherApiConfig])
-    ], WeatherApiService);
-    return WeatherApiService;
-}());
+    }
+};
+WeatherApiService = __decorate([
+    core_1.Injectable(),
+    __param(2, core_1.Inject('WEATHER_CONFIG')),
+    __metadata("design:paramtypes", [http_1.HttpClient,
+        poling_service_1.PoolingService,
+        WeatherApiConfig])
+], WeatherApiService);
 exports.WeatherApiService = WeatherApiService;
-var WeatherApiConfig = (function () {
-    function WeatherApiConfig() {
+class WeatherApiConfig {
+    constructor() {
         this.name = WeatherApiName.OPEN_WEATHER_MAP;
         this.key = 'provide secret key';
         this.baseUrl = 'http://api.openweathermap.org/data/2.5';
     }
-    return WeatherApiConfig;
-}());
+}
 exports.WeatherApiConfig = WeatherApiConfig;
 var WeatherApiName;
 (function (WeatherApiName) {
@@ -4985,42 +4979,40 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
+const core_1 = __webpack_require__(1);
 __webpack_require__(137);
 __webpack_require__(138);
 __webpack_require__(139);
 __webpack_require__(140);
-var Observable_1 = __webpack_require__(141);
-var Subject_1 = __webpack_require__(142);
-var PoolingService = (function () {
-    function PoolingService(zone) {
+const Observable_1 = __webpack_require__(141);
+const Subject_1 = __webpack_require__(142);
+let PoolingService = class PoolingService {
+    constructor(zone) {
         this.zone = zone;
     }
     // NOTE: Running the interval outside Angular ensures that e2e tests will not hang.
-    PoolingService.prototype.execute = function (operation, frequency) {
-        var _this = this;
-        if (frequency === void 0) { frequency = 1000; }
-        var subject = new Subject_1.Subject();
-        var source = Observable_1.Observable.create(function (observer) {
-            var sub;
-            _this.zone.runOutsideAngular(function () {
-                var zone = _this.zone;
+    execute(operation, frequency = 1000) {
+        const subject = new Subject_1.Subject();
+        const source = Observable_1.Observable.create((observer) => {
+            let sub;
+            this.zone.runOutsideAngular(() => {
+                const zone = this.zone;
                 sub = Observable_1.Observable.interval(frequency)
                     .mergeMap(operation)
                     .subscribe({
-                    next: function (result) {
-                        zone.run(function () {
+                    next(result) {
+                        zone.run(() => {
                             observer.next(result);
                         });
                     },
-                    error: function (err) {
-                        zone.run(function () {
+                    error(err) {
+                        zone.run(() => {
                             observer.error(err);
                         });
                     }
                 });
             });
-            return function () {
+            return () => {
                 if (sub) {
                     sub.unsubscribe();
                 }
@@ -5030,13 +5022,12 @@ var PoolingService = (function () {
             .multicast(subject)
             .refCount()
             .merge(operation());
-    };
-    PoolingService = __decorate([
-        core_1.Injectable(),
-        __metadata("design:paramtypes", [core_1.NgZone])
-    ], PoolingService);
-    return PoolingService;
-}());
+    }
+};
+PoolingService = __decorate([
+    core_1.Injectable(),
+    __metadata("design:paramtypes", [core_1.NgZone])
+], PoolingService);
 exports.PoolingService = PoolingService;
 
 
@@ -5056,55 +5047,63 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var WeatherCurrentTempComponent = (function () {
-    function WeatherCurrentTempComponent() {
+const core_1 = __webpack_require__(1);
+let WeatherCurrentTempComponent = class WeatherCurrentTempComponent {
+    constructor() {
         this._deg = TemperatureScale.CELCIUS;
     }
-    Object.defineProperty(WeatherCurrentTempComponent.prototype, "deg", {
-        get: function () {
-            return this._deg;
-        },
-        set: function (value) {
-            this._deg = value;
-            switch (value) {
-                case TemperatureScale.CELCIUS:
-                    this.unitSymbol = 'C';
-                    break;
-                case TemperatureScale.FAHRENHEIT:
-                    this.unitSymbol = 'F';
-                    break;
-                case TemperatureScale.KELVIN:
-                    this.unitSymbol = 'K';
-                    break;
-                default:
-                    this.unitSymbol = 'C';
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number)
-    ], WeatherCurrentTempComponent.prototype, "temp", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number),
-        __metadata("design:paramtypes", [Number])
-    ], WeatherCurrentTempComponent.prototype, "deg", null);
-    WeatherCurrentTempComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-current-temperature',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      :host {\n        display: block;\n        line-height: 1.1em;\n      }\n      .deg {\n        letter-spacing: -0.13em;\n        position: relative;\n        left: -0.2em;\n      }\n    "
-            ],
-            template: "\n    {{ temp?.toFixed() }}\n    <span *ngIf=\"temp\" class=\"deg\">&deg; {{ unitSymbol }}</span>\n  "
-        })
-    ], WeatherCurrentTempComponent);
-    return WeatherCurrentTempComponent;
-}());
+    get deg() {
+        return this._deg;
+    }
+    set deg(value) {
+        this._deg = value;
+        switch (value) {
+            case TemperatureScale.CELCIUS:
+                this.unitSymbol = 'C';
+                break;
+            case TemperatureScale.FAHRENHEIT:
+                this.unitSymbol = 'F';
+                break;
+            case TemperatureScale.KELVIN:
+                this.unitSymbol = 'K';
+                break;
+            default:
+                this.unitSymbol = 'C';
+        }
+    }
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number)
+], WeatherCurrentTempComponent.prototype, "temp", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [Number])
+], WeatherCurrentTempComponent.prototype, "deg", null);
+WeatherCurrentTempComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-current-temperature',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      :host {
+        display: block;
+        line-height: 1.1em;
+      }
+      .deg {
+        letter-spacing: -0.13em;
+        position: relative;
+        left: -0.2em;
+      }
+    `
+        ],
+        template: `
+    {{ temp?.toFixed() }}
+    <span *ngIf="temp" class="deg">&deg; {{ unitSymbol }}</span>
+  `
+    })
+], WeatherCurrentTempComponent);
 exports.WeatherCurrentTempComponent = WeatherCurrentTempComponent;
 var TemperatureScale;
 (function (TemperatureScale) {
@@ -17344,28 +17343,28 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var http_1 = __webpack_require__(5);
-var weather_api_service_1 = __webpack_require__(4);
-var poling_service_1 = __webpack_require__(6);
-var weather_container_1 = __webpack_require__(148);
-var common_1 = __webpack_require__(149);
-var weather_icon_component_1 = __webpack_require__(150);
-var weather_current_description_component_1 = __webpack_require__(151);
-var current_temperature_component_1 = __webpack_require__(7);
-var actions_component_1 = __webpack_require__(152);
-var weather_location_component_1 = __webpack_require__(153);
-var weather_current_wind_component_1 = __webpack_require__(154);
-var open_weather_map_api_service_1 = __webpack_require__(155);
-var weather_current_details_component_1 = __webpack_require__(157);
-var weather_forecast_component_1 = __webpack_require__(158);
-var forecast_simple_grid_component_1 = __webpack_require__(159);
-var weather_forecast_grid_day_component_1 = __webpack_require__(160);
-var forecast_detailed_component_1 = __webpack_require__(161);
-var forecast_detailed_day_component_1 = __webpack_require__(162);
-var chart_component_1 = __webpack_require__(163);
-var forecast_chart_wide_component_1 = __webpack_require__(167);
-var weather_helpers_service_1 = __webpack_require__(3);
+const core_1 = __webpack_require__(1);
+const http_1 = __webpack_require__(5);
+const weather_api_service_1 = __webpack_require__(4);
+const poling_service_1 = __webpack_require__(6);
+const weather_container_1 = __webpack_require__(148);
+const common_1 = __webpack_require__(149);
+const weather_icon_component_1 = __webpack_require__(150);
+const weather_current_description_component_1 = __webpack_require__(151);
+const current_temperature_component_1 = __webpack_require__(7);
+const actions_component_1 = __webpack_require__(152);
+const weather_location_component_1 = __webpack_require__(153);
+const weather_current_wind_component_1 = __webpack_require__(154);
+const open_weather_map_api_service_1 = __webpack_require__(155);
+const weather_current_details_component_1 = __webpack_require__(157);
+const weather_forecast_component_1 = __webpack_require__(158);
+const forecast_simple_grid_component_1 = __webpack_require__(159);
+const weather_forecast_grid_day_component_1 = __webpack_require__(160);
+const forecast_detailed_component_1 = __webpack_require__(161);
+const forecast_detailed_day_component_1 = __webpack_require__(162);
+const chart_component_1 = __webpack_require__(163);
+const forecast_chart_wide_component_1 = __webpack_require__(167);
+const weather_helpers_service_1 = __webpack_require__(3);
 function apiServiceFactory(http, pooling, openWeather) {
     switch (openWeather.name) {
         case weather_api_service_1.WeatherApiName.OPEN_WEATHER_MAP:
@@ -17391,36 +17390,34 @@ function forRoot(config) {
     };
 }
 exports.forRoot = forRoot;
-var AngularWeatherWidgetModule = (function () {
-    function AngularWeatherWidgetModule() {
-    }
-    AngularWeatherWidgetModule.forRoot = forRoot;
-    AngularWeatherWidgetModule = __decorate([
-        core_1.NgModule({
-            imports: [common_1.CommonModule, http_1.HttpClientModule],
-            declarations: [
-                chart_component_1.ChartComponent,
-                weather_container_1.WeatherContainer,
-                current_temperature_component_1.WeatherCurrentTempComponent,
-                actions_component_1.WeatherActionsComponent,
-                weather_icon_component_1.WeatherIconComponent,
-                weather_current_description_component_1.WeatherCurrentDescriptionComponent,
-                weather_location_component_1.WeatherLocationComponent,
-                weather_current_wind_component_1.WeatherCurrentWindComponent,
-                weather_current_details_component_1.WeatherCurrentDetailsComponent,
-                weather_forecast_component_1.WeatherForecastComponent,
-                weather_forecast_grid_day_component_1.WeatherForecastGridDayComponent,
-                forecast_simple_grid_component_1.WeatherForecastSimpleGridComponent,
-                forecast_detailed_component_1.WeatherForecastDetailedComponent,
-                forecast_detailed_day_component_1.WeatherForecastDetailDayComponent,
-                forecast_chart_wide_component_1.WeatherForecastChartWideComponent
-            ],
-            exports: [weather_container_1.WeatherContainer]
-        }),
-        __metadata("design:paramtypes", [])
-    ], AngularWeatherWidgetModule);
-    return AngularWeatherWidgetModule;
-}());
+let AngularWeatherWidgetModule = class AngularWeatherWidgetModule {
+    constructor() { }
+};
+AngularWeatherWidgetModule.forRoot = forRoot;
+AngularWeatherWidgetModule = __decorate([
+    core_1.NgModule({
+        imports: [common_1.CommonModule, http_1.HttpClientModule],
+        declarations: [
+            chart_component_1.ChartComponent,
+            weather_container_1.WeatherContainer,
+            current_temperature_component_1.WeatherCurrentTempComponent,
+            actions_component_1.WeatherActionsComponent,
+            weather_icon_component_1.WeatherIconComponent,
+            weather_current_description_component_1.WeatherCurrentDescriptionComponent,
+            weather_location_component_1.WeatherLocationComponent,
+            weather_current_wind_component_1.WeatherCurrentWindComponent,
+            weather_current_details_component_1.WeatherCurrentDetailsComponent,
+            weather_forecast_component_1.WeatherForecastComponent,
+            weather_forecast_grid_day_component_1.WeatherForecastGridDayComponent,
+            forecast_simple_grid_component_1.WeatherForecastSimpleGridComponent,
+            forecast_detailed_component_1.WeatherForecastDetailedComponent,
+            forecast_detailed_day_component_1.WeatherForecastDetailDayComponent,
+            forecast_chart_wide_component_1.WeatherForecastChartWideComponent
+        ],
+        exports: [weather_container_1.WeatherContainer]
+    }),
+    __metadata("design:paramtypes", [])
+], AngularWeatherWidgetModule);
 exports.AngularWeatherWidgetModule = AngularWeatherWidgetModule;
 __export(__webpack_require__(2));
 var weather_api_service_2 = __webpack_require__(4);
@@ -17509,11 +17506,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var weather_api_service_1 = __webpack_require__(4);
-var weather_interfaces_1 = __webpack_require__(2);
-var WeatherContainer = (function () {
-    function WeatherContainer(weatherApi, changeDetectorRef, renderer, element) {
+const core_1 = __webpack_require__(1);
+const weather_api_service_1 = __webpack_require__(4);
+const weather_interfaces_1 = __webpack_require__(2);
+let WeatherContainer = class WeatherContainer {
+    constructor(weatherApi, changeDetectorRef, renderer, element) {
         this.weatherApi = weatherApi;
         this.changeDetectorRef = changeDetectorRef;
         this.renderer = renderer;
@@ -17522,47 +17519,42 @@ var WeatherContainer = (function () {
         this.height = 'auto';
         this.isWideLayout = false;
     }
-    Object.defineProperty(WeatherContainer.prototype, "settings", {
-        get: function () {
-            return this._settings;
-        },
-        set: function (value) {
-            if (!value) {
-                return;
-            }
-            this._settings = value;
-            this.background = this._settings.backgroundColor || 'white';
-            this.color = this._settings.color || 'black';
-            this.width = this._settings.width;
-            this.height = this._settings.height;
-            if (this.weatherApi.apiConfig.name && this.weatherApi.apiConfig.key) {
-                this.getWeather();
-            }
-            if (this._settings.layout) {
-                this.isWideLayout = this._settings.layout === weather_interfaces_1.WeatherLayout.WIDE;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    WeatherContainer.prototype.ngOnDestroy = function () {
+    set settings(value) {
+        if (!value) {
+            return;
+        }
+        this._settings = value;
+        this.background = this._settings.backgroundColor || 'white';
+        this.color = this._settings.color || 'black';
+        this.width = this._settings.width;
+        this.height = this._settings.height;
+        if (this.weatherApi.apiConfig.name && this.weatherApi.apiConfig.key) {
+            this.getWeather();
+        }
+        if (this._settings.layout) {
+            this.isWideLayout = this._settings.layout === weather_interfaces_1.WeatherLayout.WIDE;
+        }
+    }
+    get settings() {
+        return this._settings;
+    }
+    ngOnDestroy() {
         if (this.subscriptionCurrentWeather) {
             this.subscriptionCurrentWeather.unsubscribe();
         }
         if (this.subscriptionForecast) {
             this.subscriptionForecast.unsubscribe();
         }
-    };
-    WeatherContainer.prototype.onMouseEnter = function () {
+    }
+    onMouseEnter() {
         this.renderer.addClass(this.element.nativeElement, 'active');
         this.isMouseOn = true;
-    };
-    WeatherContainer.prototype.onMouseLeave = function () {
+    }
+    onMouseLeave() {
         this.renderer.removeClass(this.element.nativeElement, 'active');
         this.isMouseOn = false;
-    };
-    WeatherContainer.prototype.getWeather = function () {
-        var _this = this;
+    }
+    getWeather() {
         if (this.subscriptionCurrentWeather) {
             this.subscriptionCurrentWeather.unsubscribe();
         }
@@ -17571,81 +17563,196 @@ var WeatherContainer = (function () {
         }
         this.currentWeather$ = this.currentWeatherCall();
         this.forecast$ = this.forecastCall();
-        this.subscriptionCurrentWeather = this.currentWeather$.subscribe(function (data) {
-            _this.currentWeather = data;
-            _this.changeDetectorRef.markForCheck();
+        this.subscriptionCurrentWeather = this.currentWeather$.subscribe(data => {
+            this.currentWeather = data;
+            this.changeDetectorRef.markForCheck();
         });
-        this.subscriptionForecast = this.forecast$.subscribe(function (data) {
-            _this.forecast = data;
-            _this.changeDetectorRef.markForCheck();
+        this.subscriptionForecast = this.forecast$.subscribe(data => {
+            this.forecast = data;
+            this.changeDetectorRef.markForCheck();
         });
-    };
-    WeatherContainer.prototype.currentWeatherCall = function () {
-        var params = Object.assign({}, this.settings.location, { units: this.settings.scale }, { lang: this.settings.language });
+    }
+    currentWeatherCall() {
+        const params = Object.assign({}, this.settings.location, { units: this.settings.scale }, { lang: this.settings.language });
         return this.weatherApi.currentWeather(params);
-    };
-    WeatherContainer.prototype.forecastCall = function () {
-        var params = Object.assign({}, this.settings.location, { units: this.settings.scale }, { lang: this.settings.language });
+    }
+    forecastCall() {
+        const params = Object.assign({}, this.settings.location, { units: this.settings.scale }, { lang: this.settings.language });
         return this.weatherApi.forecast(params);
-    };
-    __decorate([
-        core_1.HostBinding('style.background'),
-        __metadata("design:type", String)
-    ], WeatherContainer.prototype, "background", void 0);
-    __decorate([
-        core_1.HostBinding('style.color'),
-        __metadata("design:type", String)
-    ], WeatherContainer.prototype, "color", void 0);
-    __decorate([
-        core_1.HostBinding('style.width'),
-        __metadata("design:type", Object)
-    ], WeatherContainer.prototype, "width", void 0);
-    __decorate([
-        core_1.HostBinding('style.height'),
-        __metadata("design:type", Object)
-    ], WeatherContainer.prototype, "height", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], WeatherContainer.prototype, "forecast", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], WeatherContainer.prototype, "currentWeather", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", weather_interfaces_1.WeatherSettings),
-        __metadata("design:paramtypes", [weather_interfaces_1.WeatherSettings])
-    ], WeatherContainer.prototype, "settings", null);
-    __decorate([
-        core_1.HostListener('mouseenter'),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", void 0)
-    ], WeatherContainer.prototype, "onMouseEnter", null);
-    __decorate([
-        core_1.HostListener('mouseleave'),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", void 0)
-    ], WeatherContainer.prototype, "onMouseLeave", null);
-    WeatherContainer = __decorate([
-        core_1.Component({
-            selector: 'weather-widget',
-            changeDetection: core_1.ChangeDetectionStrategy.Default,
-            styles: [
-                "\n      :host {\n        display: flex;\n        position: relative;\n        padding: 1em;\n        box-sizing: border-box;\n      }\n      .info {\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        width: 100%;\n      }\n      .info.wide {\n        flex-direction: row;\n      }\n      .wide .current {\n        flex-grow: 0;\n      }\n      .wide .forecast {\n        flex-grow: 1;\n        overflow-y: auto;\n        height: 100%;\n      }\n      .current {\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        min-width: 140px;\n      }\n      .forecast {\n        min-width: 200px;\n        width: 100%;\n        overflow-y: auto;\n      }\n      .current,\n      .forecast {\n        padding: 0.5em;\n      }\n      weather-actions {\n        display: block;\n        position: absolute;\n        top: 10px;\n        right: 10px;\n      }\n      weather-current-temperature.big {\n        font-size: 3em;\n      }\n      weather-icon.big {\n        font-size: 6em;\n        padding: 0.15em;\n      }\n      .empty {\n        flex-direction: row;\n      }\n      .empty i {\n        font-size: 3em;\n        margin-right: 0.3em;\n      }\n    "
-            ],
-            template: "\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css\"\n    />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons-wind.min.css\"\n    />\n    <div *ngIf=\"currentWeather\" class=\"info\" [class.wide]=\"isWideLayout\">\n      <div class=\"current\">\n        <weather-icon\n          class=\"big\"\n          [iconImageUrl]=\"currentWeather?.iconUrl\"\n          [iconClass]=\"currentWeather?.iconClass\"\n        ></weather-icon>\n        <weather-current-description\n          [descripion]=\"currentWeather?.description\"\n        ></weather-current-description>\n        <weather-current-wind\n          *ngIf=\"settings.showWind\"\n          [scale]=\"settings.scale\"\n          [deg]=\"currentWeather?.wind.deg\"\n          [speed]=\"currentWeather?.wind.speed\"\n        ></weather-current-wind>\n        <weather-location [place]=\"currentWeather?.location\"></weather-location>\n        <weather-current-temperature\n          class=\"big\"\n          [temp]=\"currentWeather?.temp\"\n          [deg]=\"settings.scale\"\n        ></weather-current-temperature>\n        <weather-current-details\n          *ngIf=\"settings.showDetails\"\n          [maxTemp]=\"currentWeather?.maxTemp\"\n          [minTemp]=\"currentWeather?.minTemp\"\n          [pressure]=\"currentWeather?.pressure\"\n          [humidity]=\"currentWeather?.humidity\"\n        ></weather-current-details>\n      </div>\n      <div class=\"forecast\" *ngIf=\"settings.showForecast\">\n        <weather-forecast\n          [forecast]=\"forecast\"\n          [settings]=\"settings\"\n          [mode]=\"settings.forecastMode\"\n        ></weather-forecast>\n      </div>\n    </div>\n    <div *ngIf=\"!currentWeather\" class=\"info empty\">\n      <i class=\"wi wi-sunrise\"></i>\n      No weather data...\n    </div>\n    <weather-actions\n      *ngIf=\"isMouseOn\"\n      (update)=\"getWeather()\"\n    ></weather-actions>\n  "
-        }) // tslint:disable-next-line:component-class-suffix
-        ,
-        __metadata("design:paramtypes", [weather_api_service_1.WeatherApiService,
-            core_1.ChangeDetectorRef,
-            core_1.Renderer2,
-            core_1.ElementRef])
-    ], WeatherContainer);
-    return WeatherContainer;
-}());
+    }
+};
+__decorate([
+    core_1.HostBinding('style.background'),
+    __metadata("design:type", String)
+], WeatherContainer.prototype, "background", void 0);
+__decorate([
+    core_1.HostBinding('style.color'),
+    __metadata("design:type", String)
+], WeatherContainer.prototype, "color", void 0);
+__decorate([
+    core_1.HostBinding('style.width'),
+    __metadata("design:type", Object)
+], WeatherContainer.prototype, "width", void 0);
+__decorate([
+    core_1.HostBinding('style.height'),
+    __metadata("design:type", Object)
+], WeatherContainer.prototype, "height", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], WeatherContainer.prototype, "forecast", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], WeatherContainer.prototype, "currentWeather", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", weather_interfaces_1.WeatherSettings),
+    __metadata("design:paramtypes", [weather_interfaces_1.WeatherSettings])
+], WeatherContainer.prototype, "settings", null);
+__decorate([
+    core_1.HostListener('mouseenter'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], WeatherContainer.prototype, "onMouseEnter", null);
+__decorate([
+    core_1.HostListener('mouseleave'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], WeatherContainer.prototype, "onMouseLeave", null);
+WeatherContainer = __decorate([
+    core_1.Component({
+        selector: 'weather-widget',
+        changeDetection: core_1.ChangeDetectionStrategy.Default,
+        styles: [
+            `
+      :host {
+        display: flex;
+        position: relative;
+        padding: 1em;
+        box-sizing: border-box;
+      }
+      .info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+      .info.wide {
+        flex-direction: row;
+      }
+      .wide .current {
+        flex-grow: 0;
+      }
+      .wide .forecast {
+        flex-grow: 1;
+        overflow-y: auto;
+        height: 100%;
+      }
+      .current {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 140px;
+      }
+      .forecast {
+        min-width: 200px;
+        width: 100%;
+        overflow-y: auto;
+      }
+      .current,
+      .forecast {
+        padding: 0.5em;
+      }
+      weather-actions {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
+      weather-current-temperature.big {
+        font-size: 3em;
+      }
+      weather-icon.big {
+        font-size: 6em;
+        padding: 0.15em;
+      }
+      .empty {
+        flex-direction: row;
+      }
+      .empty i {
+        font-size: 3em;
+        margin-right: 0.3em;
+      }
+    `
+        ],
+        template: `
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons-wind.min.css"
+    />
+    <div *ngIf="currentWeather" class="info" [class.wide]="isWideLayout">
+      <div class="current">
+        <weather-icon
+          class="big"
+          [iconImageUrl]="currentWeather?.iconUrl"
+          [iconClass]="currentWeather?.iconClass"
+        ></weather-icon>
+        <weather-current-description
+          [descripion]="currentWeather?.description"
+        ></weather-current-description>
+        <weather-current-wind
+          *ngIf="settings.showWind"
+          [scale]="settings.scale"
+          [deg]="currentWeather?.wind.deg"
+          [speed]="currentWeather?.wind.speed"
+        ></weather-current-wind>
+        <weather-location [place]="currentWeather?.location"></weather-location>
+        <weather-current-temperature
+          class="big"
+          [temp]="currentWeather?.temp"
+          [deg]="settings.scale"
+        ></weather-current-temperature>
+        <weather-current-details
+          *ngIf="settings.showDetails"
+          [maxTemp]="currentWeather?.maxTemp"
+          [minTemp]="currentWeather?.minTemp"
+          [pressure]="currentWeather?.pressure"
+          [humidity]="currentWeather?.humidity"
+        ></weather-current-details>
+      </div>
+      <div class="forecast" *ngIf="settings.showForecast">
+        <weather-forecast
+          [forecast]="forecast"
+          [settings]="settings"
+          [mode]="settings.forecastMode"
+        ></weather-forecast>
+      </div>
+    </div>
+    <div *ngIf="!currentWeather" class="info empty">
+      <i class="wi wi-sunrise"></i>
+      No weather data...
+    </div>
+    <weather-actions
+      *ngIf="isMouseOn"
+      (update)="getWeather()"
+    ></weather-actions>
+  `
+    }) // tslint:disable-next-line:component-class-suffix
+    ,
+    __metadata("design:paramtypes", [weather_api_service_1.WeatherApiService,
+        core_1.ChangeDetectorRef,
+        core_1.Renderer2,
+        core_1.ElementRef])
+], WeatherContainer);
 exports.WeatherContainer = WeatherContainer;
 
 
@@ -17671,32 +17778,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var WeatherIconComponent = (function () {
-    function WeatherIconComponent() {
-    }
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", String)
-    ], WeatherIconComponent.prototype, "iconClass", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", String)
-    ], WeatherIconComponent.prototype, "iconImageUrl", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", String)
-    ], WeatherIconComponent.prototype, "title", void 0);
-    WeatherIconComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-icon',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [""],
-            template: "\n    <i *ngIf=\"iconClass\" [class]=\"iconClass\"></i>\n    <img *ngIf=\"iconImageUrl && !iconClass\" [src]=\"iconImageUrl\" />\n  "
-        })
-    ], WeatherIconComponent);
-    return WeatherIconComponent;
-}());
+const core_1 = __webpack_require__(1);
+let WeatherIconComponent = class WeatherIconComponent {
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", String)
+], WeatherIconComponent.prototype, "iconClass", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", String)
+], WeatherIconComponent.prototype, "iconImageUrl", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", String)
+], WeatherIconComponent.prototype, "title", void 0);
+WeatherIconComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-icon',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [``],
+        template: `
+    <i *ngIf="iconClass" [class]="iconClass"></i>
+    <img *ngIf="iconImageUrl && !iconClass" [src]="iconImageUrl" />
+  `
+    })
+], WeatherIconComponent);
 exports.WeatherIconComponent = WeatherIconComponent;
 
 
@@ -17716,26 +17823,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var WeatherCurrentDescriptionComponent = (function () {
-    function WeatherCurrentDescriptionComponent() {
-    }
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", String)
-    ], WeatherCurrentDescriptionComponent.prototype, "descripion", void 0);
-    WeatherCurrentDescriptionComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-current-description',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      :host {\n        display: block;\n        text-align: center;\n      }\n    "
-            ],
-            template: "\n    {{ descripion | uppercase }}\n  "
-        })
-    ], WeatherCurrentDescriptionComponent);
-    return WeatherCurrentDescriptionComponent;
-}());
+const core_1 = __webpack_require__(1);
+let WeatherCurrentDescriptionComponent = class WeatherCurrentDescriptionComponent {
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", String)
+], WeatherCurrentDescriptionComponent.prototype, "descripion", void 0);
+WeatherCurrentDescriptionComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-current-description',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      :host {
+        display: block;
+        text-align: center;
+      }
+    `
+        ],
+        template: `
+    {{ descripion | uppercase }}
+  `
+    })
+], WeatherCurrentDescriptionComponent);
 exports.WeatherCurrentDescriptionComponent = WeatherCurrentDescriptionComponent;
 
 
@@ -17755,27 +17866,40 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var WeatherActionsComponent = (function () {
-    function WeatherActionsComponent() {
+const core_1 = __webpack_require__(1);
+let WeatherActionsComponent = class WeatherActionsComponent {
+    constructor() {
         this.update = new core_1.EventEmitter();
     }
-    __decorate([
-        core_1.Output(),
-        __metadata("design:type", core_1.EventEmitter)
-    ], WeatherActionsComponent.prototype, "update", void 0);
-    WeatherActionsComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-actions',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      button {\n        border: none;\n        background: transparent;\n        cursor: pointer;\n        font-size: 1.6em;\n        border-radius: 50%;\n        color: inherit;\n      }\n      button:hover {\n        background: rgba(0, 0, 0, 0.1);\n      }\n    "
-            ],
-            template: "\n    <button (click)=\"update.emit()\"><i class=\"wi wi-refresh\"></i></button>\n  "
-        })
-    ], WeatherActionsComponent);
-    return WeatherActionsComponent;
-}());
+};
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", core_1.EventEmitter)
+], WeatherActionsComponent.prototype, "update", void 0);
+WeatherActionsComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-actions',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      button {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-size: 1.6em;
+        border-radius: 50%;
+        color: inherit;
+      }
+      button:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+    `
+        ],
+        template: `
+    <button (click)="update.emit()"><i class="wi wi-refresh"></i></button>
+  `
+    })
+], WeatherActionsComponent);
 exports.WeatherActionsComponent = WeatherActionsComponent;
 
 
@@ -17795,26 +17919,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var WeatherLocationComponent = (function () {
-    function WeatherLocationComponent() {
-    }
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", String)
-    ], WeatherLocationComponent.prototype, "place", void 0);
-    WeatherLocationComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-location',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      :host {\n        margin-top: 1em;\n        font-size: 1em;\n      }\n    "
-            ],
-            template: "\n    {{ place }}\n  "
-        })
-    ], WeatherLocationComponent);
-    return WeatherLocationComponent;
-}());
+const core_1 = __webpack_require__(1);
+let WeatherLocationComponent = class WeatherLocationComponent {
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", String)
+], WeatherLocationComponent.prototype, "place", void 0);
+WeatherLocationComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-location',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      :host {
+        margin-top: 1em;
+        font-size: 1em;
+      }
+    `
+        ],
+        template: `
+    {{ place }}
+  `
+    })
+], WeatherLocationComponent);
 exports.WeatherLocationComponent = WeatherLocationComponent;
 
 
@@ -17834,37 +17962,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var current_temperature_component_1 = __webpack_require__(7);
-var WeatherCurrentWindComponent = (function () {
-    function WeatherCurrentWindComponent() {
+const core_1 = __webpack_require__(1);
+const current_temperature_component_1 = __webpack_require__(7);
+let WeatherCurrentWindComponent = class WeatherCurrentWindComponent {
+    get scale() {
+        return this._scale;
     }
-    Object.defineProperty(WeatherCurrentWindComponent.prototype, "scale", {
-        get: function () {
-            return this._scale;
-        },
-        set: function (value) {
-            this._scale = value;
-            this.unit = this.mapScaleToText(this._scale);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(WeatherCurrentWindComponent.prototype, "deg", {
-        get: function () {
-            return this._deg;
-        },
-        set: function (value) {
-            if (!value) {
-                return;
-            }
-            this._deg = value;
-            this.windIcon = "wi wi-wind from-" + this._deg + "-deg";
-        },
-        enumerable: true,
-        configurable: true
-    });
-    WeatherCurrentWindComponent.prototype.mapScaleToText = function (scale) {
+    set scale(value) {
+        this._scale = value;
+        this.unit = this.mapScaleToText(this._scale);
+    }
+    get deg() {
+        return this._deg;
+    }
+    set deg(value) {
+        if (!value) {
+            return;
+        }
+        this._deg = value;
+        this.windIcon = `wi wi-wind from-${this._deg}-deg`;
+    }
+    mapScaleToText(scale) {
         switch (scale) {
             case current_temperature_component_1.TemperatureScale.CELCIUS:
             case current_temperature_component_1.TemperatureScale.KELVIN:
@@ -17874,33 +17992,47 @@ var WeatherCurrentWindComponent = (function () {
             default:
                 return '';
         }
-    };
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object),
-        __metadata("design:paramtypes", [Object])
-    ], WeatherCurrentWindComponent.prototype, "scale", null);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number),
-        __metadata("design:paramtypes", [Number])
-    ], WeatherCurrentWindComponent.prototype, "deg", null);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number)
-    ], WeatherCurrentWindComponent.prototype, "speed", void 0);
-    WeatherCurrentWindComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-current-wind',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      :host {\n        display: flex;\n        justify-content: space-around;\n        align-items: center;\n        font-size: 0.8em;\n        min-height: 1.3em;\n      }\n      i {\n        margin-left: 0.3em;\n        font-size: 1.6em;\n      }\n    "
-            ],
-            template: "\n    <span>Wind {{ speed }} {{ unit }}</span>\n    <i [class]=\"windIcon\"></i>\n  "
-        })
-    ], WeatherCurrentWindComponent);
-    return WeatherCurrentWindComponent;
-}());
+    }
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object),
+    __metadata("design:paramtypes", [Object])
+], WeatherCurrentWindComponent.prototype, "scale", null);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [Number])
+], WeatherCurrentWindComponent.prototype, "deg", null);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number)
+], WeatherCurrentWindComponent.prototype, "speed", void 0);
+WeatherCurrentWindComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-current-wind',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      :host {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        font-size: 0.8em;
+        min-height: 1.3em;
+      }
+      i {
+        margin-left: 0.3em;
+        font-size: 1.6em;
+      }
+    `
+        ],
+        template: `
+    <span>Wind {{ speed }} {{ unit }}</span>
+    <i [class]="windIcon"></i>
+  `
+    })
+], WeatherCurrentWindComponent);
 exports.WeatherCurrentWindComponent = WeatherCurrentWindComponent;
 
 
@@ -17910,16 +18042,6 @@ exports.WeatherCurrentWindComponent = WeatherCurrentWindComponent;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -17930,25 +18052,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var http_1 = __webpack_require__(5);
-var current_temperature_component_1 = __webpack_require__(7);
-var poling_service_1 = __webpack_require__(6);
-var weather_api_service_1 = __webpack_require__(4);
-var open_weather_map_to_weather_icons_1 = __webpack_require__(156);
-var OpenWeatherMapApiService = (function (_super) {
-    __extends(OpenWeatherMapApiService, _super);
+const core_1 = __webpack_require__(1);
+const http_1 = __webpack_require__(5);
+const current_temperature_component_1 = __webpack_require__(7);
+const poling_service_1 = __webpack_require__(6);
+const weather_api_service_1 = __webpack_require__(4);
+const open_weather_map_to_weather_icons_1 = __webpack_require__(156);
+let OpenWeatherMapApiService = class OpenWeatherMapApiService extends weather_api_service_1.WeatherApiService {
     // iconCodes$: Observable<any>;
-    function OpenWeatherMapApiService(http, poolingService, apiConfig) {
-        var _this = _super.call(this, http, poolingService, apiConfig) || this;
-        _this.http = http;
-        _this.poolingService = poolingService;
-        _this.apiConfig = apiConfig;
-        _this.iconCodes = open_weather_map_to_weather_icons_1.iconCodes;
-        return _this;
+    constructor(http, poolingService, apiConfig) {
+        super(http, poolingService, apiConfig);
+        this.http = http;
+        this.poolingService = poolingService;
+        this.apiConfig = apiConfig;
+        this.iconCodes = open_weather_map_to_weather_icons_1.iconCodes;
     }
-    OpenWeatherMapApiService.prototype.mapQueryParams = function (params) {
-        var mapped = {
+    mapQueryParams(params) {
+        const mapped = {
             id: params.cityId,
             q: params.cityName,
             lat: params.latLng ? params.latLng.lat : undefined,
@@ -17958,12 +18078,12 @@ var OpenWeatherMapApiService = (function (_super) {
             lang: params.lang
         };
         return mapped;
-    };
-    OpenWeatherMapApiService.prototype.mapCurrentWeatherResponse = function (response) {
+    }
+    mapCurrentWeatherResponse(response) {
         if (!response) {
             return {};
         }
-        var weather = {
+        const weather = {
             temp: response.main.temp,
             pressure: response.main ? response.main.pressure : undefined,
             humidity: response.main ? response.main.humidity : undefined,
@@ -17985,22 +18105,21 @@ var OpenWeatherMapApiService = (function (_super) {
             }
         };
         return weather;
-    };
-    OpenWeatherMapApiService.prototype.mapForecastResponse = function (response) {
-        var _this = this;
+    }
+    mapForecastResponse(response) {
         if (!response) {
             return [];
         }
-        var city = response.city;
-        return response.list.map(function (el) {
-            var forecast = {
+        const city = response.city;
+        return response.list.map((el) => {
+            const forecast = {
                 temp: el.main.temp,
                 pressure: el.main.pressure,
                 humidity: el.main.humidity,
                 minTemp: el.main.temp_min,
                 maxTemp: el.main.temp_max,
                 location: city.name,
-                iconClass: _this.mapResponseToIconClass(el),
+                iconClass: this.mapResponseToIconClass(el),
                 description: el.weather[0].description,
                 data: new Date(el.dt * 1000),
                 wind: {
@@ -18010,25 +18129,25 @@ var OpenWeatherMapApiService = (function (_super) {
             };
             return forecast;
         });
-    };
-    OpenWeatherMapApiService.prototype.mapResponseToIconUrl = function (response) {
-        return "http://openweathermap.org/img/w/" + response.weather[0].icon + ".png";
-    };
-    OpenWeatherMapApiService.prototype.mapResponseToIconClass = function (response) {
-        var code = response.weather[0].id;
-        var prefix = 'wi wi-';
-        var icon = open_weather_map_to_weather_icons_1.iconCodes[code].icon;
+    }
+    mapResponseToIconUrl(response) {
+        return `http://openweathermap.org/img/w/${response.weather[0].icon}.png`;
+    }
+    mapResponseToIconClass(response) {
+        const code = response.weather[0].id;
+        const prefix = 'wi wi-';
+        let icon = open_weather_map_to_weather_icons_1.iconCodes[code].icon;
         // If we are not in the ranges mentioned above, add a day/night prefix.
         if (!(code > 699 && code < 800) && !(code > 899 && code < 1000)) {
             icon = 'day-' + icon;
         }
         icon = prefix + icon;
         return icon;
-    };
-    OpenWeatherMapApiService.prototype.setTokenKey = function () {
+    }
+    setTokenKey() {
         return 'APPID';
-    };
-    OpenWeatherMapApiService.prototype.mapUnits = function (unit) {
+    }
+    mapUnits(unit) {
         switch (unit) {
             case current_temperature_component_1.TemperatureScale.CELCIUS:
                 return 'metric';
@@ -18039,15 +18158,14 @@ var OpenWeatherMapApiService = (function (_super) {
             default:
                 return 'metric';
         }
-    };
-    OpenWeatherMapApiService = __decorate([
-        core_1.Injectable(),
-        __metadata("design:paramtypes", [http_1.HttpClient,
-            poling_service_1.PoolingService,
-            weather_api_service_1.WeatherApiConfig])
-    ], OpenWeatherMapApiService);
-    return OpenWeatherMapApiService;
-}(weather_api_service_1.WeatherApiService));
+    }
+};
+OpenWeatherMapApiService = __decorate([
+    core_1.Injectable(),
+    __metadata("design:paramtypes", [http_1.HttpClient,
+        poling_service_1.PoolingService,
+        weather_api_service_1.WeatherApiConfig])
+], OpenWeatherMapApiService);
 exports.OpenWeatherMapApiService = OpenWeatherMapApiService;
 
 
@@ -18370,38 +18488,65 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var WeatherCurrentDetailsComponent = (function () {
-    function WeatherCurrentDetailsComponent() {
-    }
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number)
-    ], WeatherCurrentDetailsComponent.prototype, "maxTemp", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number)
-    ], WeatherCurrentDetailsComponent.prototype, "minTemp", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number)
-    ], WeatherCurrentDetailsComponent.prototype, "pressure", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number)
-    ], WeatherCurrentDetailsComponent.prototype, "humidity", void 0);
-    WeatherCurrentDetailsComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-current-details',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      :host {\n        font-size: 0.8em;\n        text-align: center;\n        margin-top: 1em;\n      }\n      .row {\n        display: flex;\n        flex-wrap: wrap;\n        justify-content: center;\n        align-items: center;\n      }\n      .row span {\n        margin: 0 0.3em;\n      }\n      .wi {\n        margin-right: 0.3em;\n      }\n    "
-            ],
-            template: "\n    <div class=\"row\">\n      <i class=\"wi wi-thermometer\"></i>\n      <span>\n        <span>Min: {{ minTemp }}&deg;</span>\n        <span>Max: {{ maxTemp }}&deg;</span>\n      </span>\n    </div>\n    <div class=\"row\">\n      <span><i class=\"wi wi-barometer\"></i>Pressure: {{ pressure }}</span>\n      <span><i class=\"wi wi-humidity\"></i>Humidity: {{ humidity }}%</span>\n    </div>\n  "
-        })
-    ], WeatherCurrentDetailsComponent);
-    return WeatherCurrentDetailsComponent;
-}());
+const core_1 = __webpack_require__(1);
+let WeatherCurrentDetailsComponent = class WeatherCurrentDetailsComponent {
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number)
+], WeatherCurrentDetailsComponent.prototype, "maxTemp", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number)
+], WeatherCurrentDetailsComponent.prototype, "minTemp", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number)
+], WeatherCurrentDetailsComponent.prototype, "pressure", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number)
+], WeatherCurrentDetailsComponent.prototype, "humidity", void 0);
+WeatherCurrentDetailsComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-current-details',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      :host {
+        font-size: 0.8em;
+        text-align: center;
+        margin-top: 1em;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+      }
+      .row span {
+        margin: 0 0.3em;
+      }
+      .wi {
+        margin-right: 0.3em;
+      }
+    `
+        ],
+        template: `
+    <div class="row">
+      <i class="wi wi-thermometer"></i>
+      <span>
+        <span>Min: {{ minTemp }}&deg;</span>
+        <span>Max: {{ maxTemp }}&deg;</span>
+      </span>
+    </div>
+    <div class="row">
+      <span><i class="wi wi-barometer"></i>Pressure: {{ pressure }}</span>
+      <span><i class="wi wi-humidity"></i>Humidity: {{ humidity }}%</span>
+    </div>
+  `
+    })
+], WeatherCurrentDetailsComponent);
 exports.WeatherCurrentDetailsComponent = WeatherCurrentDetailsComponent;
 
 
@@ -18421,70 +18566,78 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var weather_interfaces_1 = __webpack_require__(2);
-var WeatherForecastComponent = (function () {
-    function WeatherForecastComponent() {
+const core_1 = __webpack_require__(1);
+const weather_interfaces_1 = __webpack_require__(2);
+let WeatherForecastComponent = class WeatherForecastComponent {
+    constructor() {
         this.isGridForecast = true;
     }
-    Object.defineProperty(WeatherForecastComponent.prototype, "mode", {
-        set: function (value) {
-            if (!value) {
-                return;
-            }
-            switch (value) {
-                case weather_interfaces_1.ForecastMode.GRID:
-                    this.isGridForecast = true;
-                    break;
-                case weather_interfaces_1.ForecastMode.DETAILED:
-                    this.isGridForecast = false;
-                    break;
-                default:
-                    this.isGridForecast = false;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(WeatherForecastComponent.prototype, "forecast", {
-        get: function () {
-            return this._forecast;
-        },
-        set: function (value) {
-            if (!value) {
-                return;
-            }
-            this._forecast = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number),
-        __metadata("design:paramtypes", [Number])
-    ], WeatherForecastComponent.prototype, "mode", null);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", weather_interfaces_1.WeatherSettings)
-    ], WeatherForecastComponent.prototype, "settings", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Array),
-        __metadata("design:paramtypes", [Array])
-    ], WeatherForecastComponent.prototype, "forecast", null);
-    WeatherForecastComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-forecast',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      :host {\n        margin-top: 1em;\n        display: block;\n        width: 100%;\n        box-sizing: border-box;\n      }\n    "
-            ],
-            template: "\n    <weather-forecast-simple-grid\n      *ngIf=\"isGridForecast\"\n      [forecast]=\"forecast\"\n    ></weather-forecast-simple-grid>\n    <weather-forecast-detailed\n      *ngIf=\"!isGridForecast\"\n      [settings]=\"settings\"\n      [forecast]=\"forecast\"\n    ></weather-forecast-detailed>\n  "
-        })
-    ], WeatherForecastComponent);
-    return WeatherForecastComponent;
-}());
+    set mode(value) {
+        if (!value) {
+            return;
+        }
+        switch (value) {
+            case weather_interfaces_1.ForecastMode.GRID:
+                this.isGridForecast = true;
+                break;
+            case weather_interfaces_1.ForecastMode.DETAILED:
+                this.isGridForecast = false;
+                break;
+            default:
+                this.isGridForecast = false;
+        }
+    }
+    set forecast(value) {
+        if (!value) {
+            return;
+        }
+        this._forecast = value;
+    }
+    get forecast() {
+        return this._forecast;
+    }
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [Number])
+], WeatherForecastComponent.prototype, "mode", null);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", weather_interfaces_1.WeatherSettings)
+], WeatherForecastComponent.prototype, "settings", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Array),
+    __metadata("design:paramtypes", [Array])
+], WeatherForecastComponent.prototype, "forecast", null);
+WeatherForecastComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-forecast',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      :host {
+        margin-top: 1em;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+      }
+    `
+        ],
+        template: `
+    <weather-forecast-simple-grid
+      *ngIf="isGridForecast"
+      [forecast]="forecast"
+    ></weather-forecast-simple-grid>
+    <weather-forecast-detailed
+      *ngIf="!isGridForecast"
+      [settings]="settings"
+      [forecast]="forecast"
+    ></weather-forecast-detailed>
+  `
+    })
+], WeatherForecastComponent);
 exports.WeatherForecastComponent = WeatherForecastComponent;
 
 
@@ -18504,44 +18657,54 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var weather_helpers_service_1 = __webpack_require__(3);
-var WeatherForecastSimpleGridComponent = (function () {
-    function WeatherForecastSimpleGridComponent(weatherHelpers) {
+const core_1 = __webpack_require__(1);
+const weather_helpers_service_1 = __webpack_require__(3);
+let WeatherForecastSimpleGridComponent = class WeatherForecastSimpleGridComponent {
+    constructor(weatherHelpers) {
         this.weatherHelpers = weatherHelpers;
     }
-    Object.defineProperty(WeatherForecastSimpleGridComponent.prototype, "forecast", {
-        get: function () {
-            return this._forecast;
-        },
-        set: function (value) {
-            if (!value) {
-                return;
-            }
-            this._forecast = value;
-            this.forecastPerDay = this.weatherHelpers.reduceToAveragePerDay(this._forecast);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Array),
-        __metadata("design:paramtypes", [Array])
-    ], WeatherForecastSimpleGridComponent.prototype, "forecast", null);
-    WeatherForecastSimpleGridComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-forecast-simple-grid',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      :host {\n        display: flex;\n        width: 100%;\n        justify-content: space-between;\n      }\n      weather-forecast-grid-day {\n        margin: 0 0.4em;\n      }\n    "
-            ],
-            template: "\n    <ng-container *ngFor=\"let forecast of forecastPerDay\">\n      <weather-forecast-grid-day\n        [forecast]=\"forecast\"\n      ></weather-forecast-grid-day>\n    </ng-container>\n  "
-        }),
-        __metadata("design:paramtypes", [weather_helpers_service_1.WeatherHelpersService])
-    ], WeatherForecastSimpleGridComponent);
-    return WeatherForecastSimpleGridComponent;
-}());
+    set forecast(value) {
+        if (!value) {
+            return;
+        }
+        this._forecast = value;
+        this.forecastPerDay = this.weatherHelpers.reduceToAveragePerDay(this._forecast);
+    }
+    get forecast() {
+        return this._forecast;
+    }
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Array),
+    __metadata("design:paramtypes", [Array])
+], WeatherForecastSimpleGridComponent.prototype, "forecast", null);
+WeatherForecastSimpleGridComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-forecast-simple-grid',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      :host {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+      }
+      weather-forecast-grid-day {
+        margin: 0 0.4em;
+      }
+    `
+        ],
+        template: `
+    <ng-container *ngFor="let forecast of forecastPerDay">
+      <weather-forecast-grid-day
+        [forecast]="forecast"
+      ></weather-forecast-grid-day>
+    </ng-container>
+  `
+    }),
+    __metadata("design:paramtypes", [weather_helpers_service_1.WeatherHelpersService])
+], WeatherForecastSimpleGridComponent);
 exports.WeatherForecastSimpleGridComponent = WeatherForecastSimpleGridComponent;
 
 
@@ -18561,26 +18724,43 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var WeatherForecastGridDayComponent = (function () {
-    function WeatherForecastGridDayComponent() {
-    }
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], WeatherForecastGridDayComponent.prototype, "forecast", void 0);
-    WeatherForecastGridDayComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-forecast-grid-day',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      :host {\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        align-items: center;\n        font-size: 1.2em;\n      }\n      weather-icon {\n        font-size: 1.4em;\n      }\n      .day {\n        font-size: 0.8em;\n      }\n    "
-            ],
-            template: "\n    <weather-icon [iconClass]=\"forecast?.iconClass\"></weather-icon>\n    <weather-current-temperature\n      [temp]=\"forecast?.temp\"\n    ></weather-current-temperature>\n    <div class=\"day\">{{ forecast?.data | date: 'EEE' }}</div>\n  "
-        })
-    ], WeatherForecastGridDayComponent);
-    return WeatherForecastGridDayComponent;
-}());
+const core_1 = __webpack_require__(1);
+let WeatherForecastGridDayComponent = class WeatherForecastGridDayComponent {
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], WeatherForecastGridDayComponent.prototype, "forecast", void 0);
+WeatherForecastGridDayComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-forecast-grid-day',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      :host {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2em;
+      }
+      weather-icon {
+        font-size: 1.4em;
+      }
+      .day {
+        font-size: 0.8em;
+      }
+    `
+        ],
+        template: `
+    <weather-icon [iconClass]="forecast?.iconClass"></weather-icon>
+    <weather-current-temperature
+      [temp]="forecast?.temp"
+    ></weather-current-temperature>
+    <div class="day">{{ forecast?.data | date: 'EEE' }}</div>
+  `
+    })
+], WeatherForecastGridDayComponent);
 exports.WeatherForecastGridDayComponent = WeatherForecastGridDayComponent;
 
 
@@ -18600,45 +18780,47 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var weather_helpers_service_1 = __webpack_require__(3);
-var weather_interfaces_1 = __webpack_require__(2);
-var WeatherForecastDetailedComponent = (function () {
-    function WeatherForecastDetailedComponent(weatherHelpers) {
+const core_1 = __webpack_require__(1);
+const weather_helpers_service_1 = __webpack_require__(3);
+const weather_interfaces_1 = __webpack_require__(2);
+let WeatherForecastDetailedComponent = class WeatherForecastDetailedComponent {
+    constructor(weatherHelpers) {
         this.weatherHelpers = weatherHelpers;
         this.forecastPerDay = [];
     }
-    Object.defineProperty(WeatherForecastDetailedComponent.prototype, "forecast", {
-        set: function (value) {
-            if (!value) {
-                return;
-            }
-            this._forecast = value;
-            this.forecastPerDay = this.weatherHelpers.groupForecastsByDay(value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Array),
-        __metadata("design:paramtypes", [Array])
-    ], WeatherForecastDetailedComponent.prototype, "forecast", null);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", weather_interfaces_1.WeatherSettings)
-    ], WeatherForecastDetailedComponent.prototype, "settings", void 0);
-    WeatherForecastDetailedComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-forecast-detailed',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [""],
-            template: "\n    <ng-container *ngFor=\"let forecast of forecastPerDay\">\n      <weather-forecast-detail-day\n        [settings]=\"settings\"\n        [forecast]=\"forecast\"\n      ></weather-forecast-detail-day>\n    </ng-container>\n  "
-        }),
-        __metadata("design:paramtypes", [weather_helpers_service_1.WeatherHelpersService])
-    ], WeatherForecastDetailedComponent);
-    return WeatherForecastDetailedComponent;
-}());
+    set forecast(value) {
+        if (!value) {
+            return;
+        }
+        this._forecast = value;
+        this.forecastPerDay = this.weatherHelpers.groupForecastsByDay(value);
+    }
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Array),
+    __metadata("design:paramtypes", [Array])
+], WeatherForecastDetailedComponent.prototype, "forecast", null);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", weather_interfaces_1.WeatherSettings)
+], WeatherForecastDetailedComponent.prototype, "settings", void 0);
+WeatherForecastDetailedComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-forecast-detailed',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [``],
+        template: `
+    <ng-container *ngFor="let forecast of forecastPerDay">
+      <weather-forecast-detail-day
+        [settings]="settings"
+        [forecast]="forecast"
+      ></weather-forecast-detail-day>
+    </ng-container>
+  `
+    }),
+    __metadata("design:paramtypes", [weather_helpers_service_1.WeatherHelpersService])
+], WeatherForecastDetailedComponent);
 exports.WeatherForecastDetailedComponent = WeatherForecastDetailedComponent;
 
 
@@ -18658,30 +18840,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var weather_helpers_service_1 = __webpack_require__(3);
-var weather_interfaces_1 = __webpack_require__(2);
-var WeatherForecastDetailDayComponent = (function () {
-    function WeatherForecastDetailDayComponent(weatherHelpers) {
+const core_1 = __webpack_require__(1);
+const weather_helpers_service_1 = __webpack_require__(3);
+const weather_interfaces_1 = __webpack_require__(2);
+let WeatherForecastDetailDayComponent = class WeatherForecastDetailDayComponent {
+    constructor(weatherHelpers) {
         this.weatherHelpers = weatherHelpers;
     }
-    Object.defineProperty(WeatherForecastDetailDayComponent.prototype, "forecast", {
-        get: function () {
-            return this._forecast;
-        },
-        set: function (value) {
-            this._forecast = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    WeatherForecastDetailDayComponent.prototype.ngOnChanges = function (change) {
+    set forecast(value) {
+        this._forecast = value;
+    }
+    get forecast() {
+        return this._forecast;
+    }
+    ngOnChanges(change) {
         if (this.settings && change['forecast']) {
             this.updateChartOptions();
             this.chartData = this.weatherHelpers.mapForecastToCharts(this._forecast, this.settings.color);
         }
-    };
-    WeatherForecastDetailDayComponent.prototype.updateChartOptions = function () {
+    }
+    updateChartOptions() {
         this.chartOptions = {
             scales: {
                 xAxes: [
@@ -18738,29 +18916,65 @@ var WeatherForecastDetailDayComponent = (function () {
                 display: false
             }
         };
-    };
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", weather_interfaces_1.WeatherSettings)
-    ], WeatherForecastDetailDayComponent.prototype, "settings", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Array),
-        __metadata("design:paramtypes", [Array])
-    ], WeatherForecastDetailDayComponent.prototype, "forecast", null);
-    WeatherForecastDetailDayComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-forecast-detail-day',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [
-                "\n      :host {\n        display: flex;\n        align-items: center;\n        padding: 0.1em 0;\n        font-size: 1em;\n        box-sizing: border-box;\n        justify-content: flex-start;\n        width: 100%;\n      }\n      :host > * {\n        padding: 0 0.4em;\n      }\n      .left {\n        flex-grow: 0;\n      }\n      weather-chart {\n        height: 80px;\n        width: 80%;\n        flex: 1 1;\n      }\n\n      weather-icon {\n        margin-top: 0.3em;\n        font-size: 1.4em;\n        display: block;\n      }\n    "
-            ],
-            template: "\n    <div class=\"left\">\n      {{ forecast[0]?.data | date: 'EEE' }}\n      <weather-icon [iconClass]=\"forecast[0]?.iconClass\"></weather-icon>\n    </div>\n    <weather-chart\n      [type]=\"'line'\"\n      [data]=\"chartData\"\n      [options]=\"chartOptions\"\n    ></weather-chart>\n  "
-        }),
-        __metadata("design:paramtypes", [weather_helpers_service_1.WeatherHelpersService])
-    ], WeatherForecastDetailDayComponent);
-    return WeatherForecastDetailDayComponent;
-}());
+    }
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", weather_interfaces_1.WeatherSettings)
+], WeatherForecastDetailDayComponent.prototype, "settings", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Array),
+    __metadata("design:paramtypes", [Array])
+], WeatherForecastDetailDayComponent.prototype, "forecast", null);
+WeatherForecastDetailDayComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-forecast-detail-day',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [
+            `
+      :host {
+        display: flex;
+        align-items: center;
+        padding: 0.1em 0;
+        font-size: 1em;
+        box-sizing: border-box;
+        justify-content: flex-start;
+        width: 100%;
+      }
+      :host > * {
+        padding: 0 0.4em;
+      }
+      .left {
+        flex-grow: 0;
+      }
+      weather-chart {
+        height: 80px;
+        width: 80%;
+        flex: 1 1;
+      }
+
+      weather-icon {
+        margin-top: 0.3em;
+        font-size: 1.4em;
+        display: block;
+      }
+    `
+        ],
+        template: `
+    <div class="left">
+      {{ forecast[0]?.data | date: 'EEE' }}
+      <weather-icon [iconClass]="forecast[0]?.iconClass"></weather-icon>
+    </div>
+    <weather-chart
+      [type]="'line'"
+      [data]="chartData"
+      [options]="chartOptions"
+    ></weather-chart>
+  `
+    }),
+    __metadata("design:paramtypes", [weather_helpers_service_1.WeatherHelpersService])
+], WeatherForecastDetailDayComponent);
 exports.WeatherForecastDetailDayComponent = WeatherForecastDetailDayComponent;
 
 
@@ -18780,13 +18994,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var chart_js_1 = __webpack_require__(164);
-var ChartComponent = (function () {
-    function ChartComponent(elementRef) {
+const core_1 = __webpack_require__(1);
+const chart_js_1 = __webpack_require__(164);
+let ChartComponent = class ChartComponent {
+    constructor(elementRef) {
         this.elementRef = elementRef;
     }
-    ChartComponent.prototype.ngOnInit = function () {
+    ngOnInit() {
         this.options.scales = {
             yAxes: [
                 {
@@ -18804,39 +19018,37 @@ var ChartComponent = (function () {
             data: this.data,
             options: this.options
         });
-    };
-    ChartComponent.prototype.ngOnChanges = function (changes) {
-        var _this = this;
+    }
+    ngOnChanges(changes) {
         if (this.chart && changes['data']) {
-            var currentValue_1 = changes['data'].currentValue;
-            ['datasets', 'labels', 'xLabels', 'yLabels'].forEach(function (property) {
-                _this.chart.data[property] = currentValue_1[property];
+            const currentValue = changes['data'].currentValue;
+            ['datasets', 'labels', 'xLabels', 'yLabels'].forEach(property => {
+                this.chart.data[property] = currentValue[property];
             });
             this.chart.update();
         }
-    };
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", String)
-    ], ChartComponent.prototype, "type", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], ChartComponent.prototype, "data", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], ChartComponent.prototype, "options", void 0);
-    ChartComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-chart',
-            template: '<canvas></canvas>',
-            styles: [':host { display: block; }']
-        }),
-        __metadata("design:paramtypes", [core_1.ElementRef])
-    ], ChartComponent);
-    return ChartComponent;
-}());
+    }
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", String)
+], ChartComponent.prototype, "type", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ChartComponent.prototype, "data", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ChartComponent.prototype, "options", void 0);
+ChartComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-chart',
+        template: '<canvas></canvas>',
+        styles: [':host { display: block; }']
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef])
+], ChartComponent);
 exports.ChartComponent = ChartComponent;
 
 
@@ -33846,27 +34058,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__(1);
-var weather_helpers_service_1 = __webpack_require__(3);
-var WeatherForecastChartWideComponent = (function () {
-    function WeatherForecastChartWideComponent(helpers) {
+const core_1 = __webpack_require__(1);
+const weather_helpers_service_1 = __webpack_require__(3);
+let WeatherForecastChartWideComponent = class WeatherForecastChartWideComponent {
+    constructor(helpers) {
         this.helpers = helpers;
     }
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Array)
-    ], WeatherForecastChartWideComponent.prototype, "forecast", void 0);
-    WeatherForecastChartWideComponent = __decorate([
-        core_1.Component({
-            selector: 'weather-forecast-chart-wide',
-            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            styles: [""],
-            template: "\n    <div></div>\n  "
-        }),
-        __metadata("design:paramtypes", [weather_helpers_service_1.WeatherHelpersService])
-    ], WeatherForecastChartWideComponent);
-    return WeatherForecastChartWideComponent;
-}());
+};
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Array)
+], WeatherForecastChartWideComponent.prototype, "forecast", void 0);
+WeatherForecastChartWideComponent = __decorate([
+    core_1.Component({
+        selector: 'weather-forecast-chart-wide',
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+        styles: [``],
+        template: `
+    <div></div>
+  `
+    }),
+    __metadata("design:paramtypes", [weather_helpers_service_1.WeatherHelpersService])
+], WeatherForecastChartWideComponent);
 exports.WeatherForecastChartWideComponent = WeatherForecastChartWideComponent;
 
 
