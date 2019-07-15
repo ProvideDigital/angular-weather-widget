@@ -15,6 +15,16 @@ import 'rxjs/add/operator/first';
 import { map, tap, filter, catchError, timeout } from 'rxjs/operators';
 import { WeatherQueryParams } from '../../weather.interfaces';
 
+export enum WeatherApiName {
+  OPEN_WEATHER_MAP = <any>'Open Weather Map'
+}
+
+export class WeatherApiConfig {
+  name: WeatherApiName = WeatherApiName.OPEN_WEATHER_MAP;
+  key = 'provide secret key';
+  baseUrl = 'http://api.openweathermap.org/data/2.5';
+}
+
 @Injectable()
 export abstract class WeatherApiService {
   poollingInterval = 60000 * 60;
@@ -125,14 +135,4 @@ export interface CurrentWeather {
 
 export interface Forecast extends CurrentWeather {
   data: Date;
-}
-
-export class WeatherApiConfig {
-  name: WeatherApiName = WeatherApiName.OPEN_WEATHER_MAP;
-  key = 'provide secret key';
-  baseUrl = 'http://api.openweathermap.org/data/2.5';
-}
-
-export enum WeatherApiName {
-  OPEN_WEATHER_MAP = <any>'Open Weather Map'
 }

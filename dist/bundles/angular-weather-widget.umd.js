@@ -34077,6 +34077,18 @@ __webpack_require__(/*! rxjs/add/operator/filter */ "rxjs/add/operator/filter");
 __webpack_require__(/*! rxjs/add/operator/catch */ "rxjs/add/operator/catch");
 __webpack_require__(/*! rxjs/add/operator/first */ "rxjs/add/operator/first");
 const operators_1 = __webpack_require__(/*! rxjs/operators */ "rxjs/operators");
+var WeatherApiName;
+(function (WeatherApiName) {
+    WeatherApiName[WeatherApiName["OPEN_WEATHER_MAP"] = 'Open Weather Map'] = "OPEN_WEATHER_MAP";
+})(WeatherApiName = exports.WeatherApiName || (exports.WeatherApiName = {}));
+class WeatherApiConfig {
+    constructor() {
+        this.name = WeatherApiName.OPEN_WEATHER_MAP;
+        this.key = 'provide secret key';
+        this.baseUrl = 'http://api.openweathermap.org/data/2.5';
+    }
+}
+exports.WeatherApiConfig = WeatherApiConfig;
 let WeatherApiService = class WeatherApiService {
     constructor(http, poolingService, apiConfig) {
         this.http = http;
@@ -34149,18 +34161,6 @@ WeatherApiService = __decorate([
         WeatherApiConfig])
 ], WeatherApiService);
 exports.WeatherApiService = WeatherApiService;
-class WeatherApiConfig {
-    constructor() {
-        this.name = WeatherApiName.OPEN_WEATHER_MAP;
-        this.key = 'provide secret key';
-        this.baseUrl = 'http://api.openweathermap.org/data/2.5';
-    }
-}
-exports.WeatherApiConfig = WeatherApiConfig;
-var WeatherApiName;
-(function (WeatherApiName) {
-    WeatherApiName[WeatherApiName["OPEN_WEATHER_MAP"] = 'Open Weather Map'] = "OPEN_WEATHER_MAP";
-})(WeatherApiName = exports.WeatherApiName || (exports.WeatherApiName = {}));
 
 
 /***/ }),
