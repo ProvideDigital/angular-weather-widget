@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 
-const IS_PROD: boolean = process.argv.indexOf('-p') > -1;
+const IS_PROD = false; // process.argv.indexOf('-p') > -1;
 const OPEN_WEATHER_MAP_API_KEY = process.env.OPEN_WEATHER_MAP_API_KEY;
 
 export default {
@@ -12,6 +12,7 @@ export default {
   output: {
     filename: IS_PROD ? '[name]-[chunkhash].js' : '[name].js'
   },
+  mode: 'development',
   module: {
     rules: [{
       test: /\.ts$/,

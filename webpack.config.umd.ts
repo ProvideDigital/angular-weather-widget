@@ -22,6 +22,7 @@ export default {
     rxjsExternals()
   ],
   devtool: 'source-map',
+  mode: 'development',
   module: {
     rules: [{
       test: /\.ts$/,
