@@ -21,7 +21,7 @@ export enum WeatherApiName {
 
 export class WeatherApiConfig {
   name: WeatherApiName = WeatherApiName.OPEN_WEATHER_MAP;
-  key = 'provide secret key';
+  key = 'Some Api Key';
   baseUrl = 'http://api.openweathermap.org/data/2.5';
 }
 
@@ -35,13 +35,13 @@ export abstract class WeatherApiService {
   ) {}
 
   currentWeather(queryParams: WeatherQueryParams): Observable<CurrentWeather> {
-    return this.callApi(queryParams, '/weather').map(
+    return this.callApi(queryParams, 'weather').map(
       this.mapCurrentWeatherResponse.bind(this)
     );
   }
 
   forecast(queryParams: WeatherQueryParams): Observable<Forecast[]> {
-    return this.callApi(queryParams, '/forecast').map(
+    return this.callApi(queryParams, 'forecast').map(
       this.mapForecastResponse.bind(this)
     );
   }
@@ -51,9 +51,8 @@ export abstract class WeatherApiService {
     endpoint: string
   ): Observable<any> {
     const params = this.mapQueryParams(queryParams);
-    const requestOptions = this.getRequestOptions(params);
 
-    console.log('callApi:', params, requestOptions);
+    const requestOptions = this.getRequestOptions(params);
 
     const apiCall = this.http
       .get(`${this.apiConfig.baseUrl}/${endpoint}`, requestOptions)
@@ -104,11 +103,12 @@ export abstract class WeatherApiService {
   }
 
   private getQueryParams(obj: { [key: string]: any }): HttpParams {
-    const queryParams = new HttpParams();
-    queryParams.set(this.setTokenKey(), this.apiConfig.key);
+    let queryParams = new HttpParams();
+    queryParams = queryParams.set(this.setTokenKey(), this.apiConfig.key);
+
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        queryParams.set(key.toString(), obj[key]);
+      if (obj.hasOwnProperty(key) && obj[key] !== undefined) {
+        queryParams = queryParams.set(key.toString(), obj[key]);
       }
     }
     return queryParams;

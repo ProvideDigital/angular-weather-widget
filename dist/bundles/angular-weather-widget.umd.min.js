@@ -34084,7 +34084,7 @@ var WeatherApiName;
 class WeatherApiConfig {
     constructor() {
         this.name = WeatherApiName.OPEN_WEATHER_MAP;
-        this.key = 'provide secret key';
+        this.key = 'Some Api Key';
         this.baseUrl = 'http://api.openweathermap.org/data/2.5';
     }
 }
@@ -34097,15 +34097,14 @@ let WeatherApiService = class WeatherApiService {
         this.poollingInterval = 60000 * 60;
     }
     currentWeather(queryParams) {
-        return this.callApi(queryParams, '/weather').map(this.mapCurrentWeatherResponse.bind(this));
+        return this.callApi(queryParams, 'weather').map(this.mapCurrentWeatherResponse.bind(this));
     }
     forecast(queryParams) {
-        return this.callApi(queryParams, '/forecast').map(this.mapForecastResponse.bind(this));
+        return this.callApi(queryParams, 'forecast').map(this.mapForecastResponse.bind(this));
     }
     callApi(queryParams, endpoint) {
         const params = this.mapQueryParams(queryParams);
         const requestOptions = this.getRequestOptions(params);
-        console.log('callApi:', params, requestOptions);
         const apiCall = this.http
             .get(`${this.apiConfig.baseUrl}/${endpoint}`, requestOptions)
             .pipe(operators_1.map(resp => resp), operators_1.filter(el => !!el));
@@ -34143,11 +34142,11 @@ let WeatherApiService = class WeatherApiService {
         };
     }
     getQueryParams(obj) {
-        const queryParams = new http_1.HttpParams();
-        queryParams.set(this.setTokenKey(), this.apiConfig.key);
+        let queryParams = new http_1.HttpParams();
+        queryParams = queryParams.set(this.setTokenKey(), this.apiConfig.key);
         for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                queryParams.set(key.toString(), obj[key]);
+            if (obj.hasOwnProperty(key) && obj[key] !== undefined) {
+                queryParams = queryParams.set(key.toString(), obj[key]);
             }
         }
         return queryParams;

@@ -14,7 +14,7 @@ export var WeatherApiName;
 var WeatherApiConfig = /** @class */ (function () {
     function WeatherApiConfig() {
         this.name = WeatherApiName.OPEN_WEATHER_MAP;
-        this.key = 'provide secret key';
+        this.key = 'Some Api Key';
         this.baseUrl = 'http://api.openweathermap.org/data/2.5';
     }
     return WeatherApiConfig;
@@ -28,15 +28,14 @@ var WeatherApiService = /** @class */ (function () {
         this.poollingInterval = 60000 * 60;
     }
     WeatherApiService.prototype.currentWeather = function (queryParams) {
-        return this.callApi(queryParams, '/weather').map(this.mapCurrentWeatherResponse.bind(this));
+        return this.callApi(queryParams, 'weather').map(this.mapCurrentWeatherResponse.bind(this));
     };
     WeatherApiService.prototype.forecast = function (queryParams) {
-        return this.callApi(queryParams, '/forecast').map(this.mapForecastResponse.bind(this));
+        return this.callApi(queryParams, 'forecast').map(this.mapForecastResponse.bind(this));
     };
     WeatherApiService.prototype.callApi = function (queryParams, endpoint) {
         var params = this.mapQueryParams(queryParams);
         var requestOptions = this.getRequestOptions(params);
-        console.log('callApi:', params, requestOptions);
         var apiCall = this.http
             .get(this.apiConfig.baseUrl + "/" + endpoint, requestOptions)
             .pipe(map(function (resp) { return resp; }), filter(function (el) { return !!el; }));
@@ -75,10 +74,10 @@ var WeatherApiService = /** @class */ (function () {
     };
     WeatherApiService.prototype.getQueryParams = function (obj) {
         var queryParams = new HttpParams();
-        queryParams.set(this.setTokenKey(), this.apiConfig.key);
+        queryParams = queryParams.set(this.setTokenKey(), this.apiConfig.key);
         for (var key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                queryParams.set(key.toString(), obj[key]);
+            if (obj.hasOwnProperty(key) && obj[key] !== undefined) {
+                queryParams = queryParams.set(key.toString(), obj[key]);
             }
         }
         return queryParams;
