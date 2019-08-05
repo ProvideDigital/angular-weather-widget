@@ -66,7 +66,7 @@ export class WeatherHelpersService {
     return forecast.reduce(
       (prev: ChartData, curr: Forecast) => {
         if (prev.labels) {
-          prev.labels.push(moment(curr.data.toISOString()).format('MM-DD'));
+          prev.labels.push(moment(curr.data.toISOString()).format('LT'));
         }
         if (prev.datasets && prev.datasets[0] && prev.datasets[0].data) {
           const data: number[] = <number[]>prev.datasets[0].data;

@@ -62,7 +62,7 @@ var WeatherHelpersService = /** @class */ (function () {
         if (borderColor === void 0) { borderColor = '#aaa'; }
         return forecast.reduce(function (prev, curr) {
             if (prev.labels) {
-                prev.labels.push(moment(curr.data.toISOString()).format('MM-DD'));
+                prev.labels.push(moment(curr.data.toISOString()).format('LT'));
             }
             if (prev.datasets && prev.datasets[0] && prev.datasets[0].data) {
                 var data = prev.datasets[0].data;

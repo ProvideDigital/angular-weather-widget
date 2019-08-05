@@ -34317,7 +34317,7 @@ let WeatherHelpersService = class WeatherHelpersService {
     mapForecastToCharts(forecast, borderColor = '#aaa') {
         return forecast.reduce((prev, curr) => {
             if (prev.labels) {
-                prev.labels.push(moment(curr.data.toISOString()).format('MM-DD'));
+                prev.labels.push(moment(curr.data.toISOString()).format('LT'));
             }
             if (prev.datasets && prev.datasets[0] && prev.datasets[0].data) {
                 const data = prev.datasets[0].data;
