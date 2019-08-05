@@ -1,5 +1,6 @@
 import * as tslib_1 from "tslib";
 import { Injectable } from '@angular/core';
+import * as moment from 'moment';
 var WeatherHelpersService = /** @class */ (function () {
     function WeatherHelpersService() {
     }
@@ -69,7 +70,7 @@ var WeatherHelpersService = /** @class */ (function () {
             }
             return prev;
         }, {
-            labels: [],
+            labels: [moment().format("MM-DD"), moment().format("MM-DD"), moment().format("MM-DD")],
             datasets: [
                 {
                     data: [],
@@ -77,7 +78,15 @@ var WeatherHelpersService = /** @class */ (function () {
                     borderColor: [borderColor],
                     borderWidth: 1
                 }
-            ]
+            ],
+            options: {
+                scales: {
+                    xAxes: [{
+                            type: 'time',
+                            distribution: 'linear'
+                        }]
+                }
+            }
         });
     };
     WeatherHelpersService.prototype.hexToRgbA = function (hex, opacity) {

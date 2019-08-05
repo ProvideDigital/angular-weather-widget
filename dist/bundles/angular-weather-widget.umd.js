@@ -34257,6 +34257,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(/*! @angular/core */ "@angular/core");
+const moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 let WeatherHelpersService = class WeatherHelpersService {
     constructor() { }
     groupForecastsByDay(list) {
@@ -34324,7 +34325,7 @@ let WeatherHelpersService = class WeatherHelpersService {
             }
             return prev;
         }, {
-            labels: [],
+            labels: [moment().format("MM-DD"), moment().format("MM-DD"), moment().format("MM-DD")],
             datasets: [
                 {
                     data: [],
@@ -34332,7 +34333,15 @@ let WeatherHelpersService = class WeatherHelpersService {
                     borderColor: [borderColor],
                     borderWidth: 1
                 }
-            ]
+            ],
+            options: {
+                scales: {
+                    xAxes: [{
+                            type: 'time',
+                            distribution: 'linear'
+                        }]
+                }
+            }
         });
     }
     hexToRgbA(hex, opacity) {

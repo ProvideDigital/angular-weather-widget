@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Forecast } from './api/weather.api.service';
 import { ChartData } from 'chart.js';
-
+import * as moment from 'moment';
 @Injectable()
 export class WeatherHelpersService {
   constructor() {}
@@ -76,7 +76,11 @@ export class WeatherHelpersService {
         return prev;
       },
       <ChartData>{
-        labels: [],
+        labels: [
+          moment().format('MM-DD'),
+          moment().format('MM-DD'),
+          moment().format('MM-DD')
+        ],
         datasets: [
           {
             data: [],
@@ -84,7 +88,17 @@ export class WeatherHelpersService {
             borderColor: [borderColor],
             borderWidth: 1
           }
-        ]
+        ],
+        options: {
+          scales: {
+            xAxes: [
+              {
+                type: 'time',
+                distribution: 'linear'
+              }
+            ]
+          }
+        }
       }
     );
   }
