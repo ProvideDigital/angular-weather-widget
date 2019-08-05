@@ -66,7 +66,7 @@ export class WeatherHelpersService {
     return forecast.reduce(
       (prev: ChartData, curr: Forecast) => {
         if (prev.labels) {
-          prev.labels.push(curr.data.toISOString());
+          prev.labels.push(moment(curr.data.toISOString()).format('MM-DD'));
         }
         if (prev.datasets && prev.datasets[0] && prev.datasets[0].data) {
           const data: number[] = <number[]>prev.datasets[0].data;
@@ -76,17 +76,14 @@ export class WeatherHelpersService {
         return prev;
       },
       <ChartData>{
-        labels: [
-          moment().format('MM-DD'),
-          moment().format('MM-DD'),
-          moment().format('MM-DD')
-        ],
+        labels: [],
         datasets: [
           {
             data: [],
             backgroundColor: ['rgba(0, 0, 0, 0.1)'],
-            borderColor: [borderColor],
-            borderWidth: 1
+            borderColor: borderColor,
+            borderWidth: 1,
+            fontColor: borderColor
           }
         ],
         options: {

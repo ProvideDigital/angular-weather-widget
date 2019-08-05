@@ -62,7 +62,7 @@ var WeatherHelpersService = /** @class */ (function () {
         if (borderColor === void 0) { borderColor = '#aaa'; }
         return forecast.reduce(function (prev, curr) {
             if (prev.labels) {
-                prev.labels.push(curr.data.toISOString());
+                prev.labels.push(moment(curr.data.toISOString()).format('MM-DD'));
             }
             if (prev.datasets && prev.datasets[0] && prev.datasets[0].data) {
                 var data = prev.datasets[0].data;
@@ -70,17 +70,14 @@ var WeatherHelpersService = /** @class */ (function () {
             }
             return prev;
         }, {
-            labels: [
-                moment().format('MM-DD'),
-                moment().format('MM-DD'),
-                moment().format('MM-DD')
-            ],
+            labels: [],
             datasets: [
                 {
                     data: [],
                     backgroundColor: ['rgba(0, 0, 0, 0.1)'],
-                    borderColor: [borderColor],
-                    borderWidth: 1
+                    borderColor: borderColor,
+                    borderWidth: 1,
+                    fontColor: borderColor
                 }
             ],
             options: {
