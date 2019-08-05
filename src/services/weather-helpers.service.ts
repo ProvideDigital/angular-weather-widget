@@ -94,7 +94,8 @@ export class WeatherHelpersService {
             xAxes: [
               {
                 type: 'time',
-                distribution: 'linear'
+                distribution: 'linear',
+                fontColor: [borderColor]
               }
             ]
           }

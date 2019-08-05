@@ -70,7 +70,11 @@ var WeatherHelpersService = /** @class */ (function () {
             }
             return prev;
         }, {
-            labels: [moment().format("MM-DD"), moment().format("MM-DD"), moment().format("MM-DD")],
+            labels: [
+                moment().format('MM-DD'),
+                moment().format('MM-DD'),
+                moment().format('MM-DD')
+            ],
             datasets: [
                 {
                     data: [],
@@ -81,10 +85,13 @@ var WeatherHelpersService = /** @class */ (function () {
             ],
             options: {
                 scales: {
-                    xAxes: [{
+                    xAxes: [
+                        {
                             type: 'time',
-                            distribution: 'linear'
-                        }]
+                            distribution: 'linear',
+                            fontColor: [borderColor]
+                        }
+                    ]
                 }
             }
         });

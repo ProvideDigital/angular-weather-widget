@@ -34325,7 +34325,11 @@ let WeatherHelpersService = class WeatherHelpersService {
             }
             return prev;
         }, {
-            labels: [moment().format("MM-DD"), moment().format("MM-DD"), moment().format("MM-DD")],
+            labels: [
+                moment().format('MM-DD'),
+                moment().format('MM-DD'),
+                moment().format('MM-DD')
+            ],
             datasets: [
                 {
                     data: [],
@@ -34336,10 +34340,13 @@ let WeatherHelpersService = class WeatherHelpersService {
             ],
             options: {
                 scales: {
-                    xAxes: [{
+                    xAxes: [
+                        {
                             type: 'time',
-                            distribution: 'linear'
-                        }]
+                            distribution: 'linear',
+                            fontColor: [borderColor]
+                        }
+                    ]
                 }
             }
         });
